@@ -1,0 +1,76 @@
+[
+  {
+    "name": "Jorgito",
+    "nickname": "El protagonista",
+    "emoji": "🎮",
+    "role": "El que convierte todo en evento",
+    "description": "Siempre termina en el centro de la historia, incluso cuando solo iba a saludar.",
+    "traits": [
+      "Carismático",
+      "Impredecible",
+      "Legendario"
+    ],
+    "quote": "Tranquilos, yo tengo un plan.",
+    "anecdote": "Una salida sencilla que terminó siendo una anécdota para contar durante meses.",
+    "skill": "Convertir un plan pequeño en una misión épica",
+    "weakness": "Los planes que empiezan con «es rapidito»",
+    "relationship": "",
+    "chaos": 4
+  },
+  {
+    "name": "Moncayo",
+    "nickname": "Carro Loco",
+    "emoji": "🤡",
+    "image": "assets/images-moncayo.png",
+    "audio": "assets/audio/Moncayo.mp3",
+    "role": "El rey de la recocha y del camuflaje laboral",
+    "description": "Convierte cualquier jornada en una operación para parecer ocupado mientras trama algo.",
+    "traits": [
+      "Loco",
+      "Hablador",
+      "Chistoso"
+    ],
+    "quote": "Qué hpta pereza trabajar",
+    "anecdote": "Pendiente de que el grupo agregue la próxima historia memorable.",
+    "skill": "Camuflaje laboral: parecer ocupado mientras trama algo",
+    "weakness": "Trabajar de verdad",
+    "relationship": "Con Oscarito pasa del cariño a la guerra y de la guerra al cariño en tiempo récord.",
+    "chaos": 5
+  },
+  {
+    "name": "Oscarito",
+    "nickname": "Jorgito / Quilcue",
+    "emoji": "😎",
+    "role": "El supernumerario que siempre tiene una versión oficial",
+    "description": "Resupernumerario, lamparoso, ojón y ordinario; cuando le preguntan por el cabildo de Totoró, activa el modo rueda de prensa y lo niega con toda seguridad.",
+    "traits": [
+      "Lamparoso",
+      "Ojón",
+      "Ordinario"
+    ],
+    "quote": "Que ordena jefe",
+    "anecdote": "Le encanta quedarse con la pistola asignada durante las vacaciones: el trámite de entrega puede esperar a que vuelva el jefe.",
+    "skill": "Convertir una pregunta sencilla en una declaración oficial",
+    "weakness": "Que le recuerden entregar lo asignado antes de salir a vacaciones",
+    "relationship": "Con Moncayo: enemigos íntimos; pasan del amor al odio en un instante y luego vuelven a ser amigos como si nada.",
+    "chaos": 5
+  },
+  {
+    "name": "Daniel",
+    "nickname": "Pan dulce",
+    "emoji": "🪖",
+    "role": "Comandante supremo de las operaciones que nadie pidió",
+    "description": "Jefe de fuerzas especiales: convierte una salida rutinaria en una misión de alto riesgo y luego pregunta quién autorizó el drama.",
+    "traits": [
+      "Chayanne",
+      "Pan dulce",
+      "Comando Colanta"
+    ],
+    "quote": "Es Cauca, ¿no?",
+    "anecdote": "Mandó a los técnicos directo a la boca del lobo y luego seguramente lo llamó entrenamiento de campo.",
+    "skill": "Escalador de vidrios enjabonados",
+    "weakness": "Los caucanos",
+    "relationship": "",
+    "chaos": 5
+  }
+]

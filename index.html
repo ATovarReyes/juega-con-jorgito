@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171526">
+  <title>Juega con Jorgito</title>
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script defer src="./assets/js/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">🎮 Juega con Jorgito</a>
+    <div class="top-actions">
+      <span id="user-label" class="muted"></span>
+      <button id="logout-btn" class="button button-quiet hidden" type="button">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="setup-warning" class="panel hidden">
+      <h1>Falta configurar Supabase</h1>
+      <p>La aplicación no está configurada correctamente. Contacta al propietario para que revise la configuración.</p>
+    </section>
+
+    <section id="login-view" class="auth-layout">
+      <div class="hero">
+        <p class="eyebrow">EL CAOS DEL GRUPO, ORGANIZADO</p>
+        <h1>Las leyendas del grupo se juegan aquí.</h1>
+        <p>Trivia, anécdotas y retos absurdos. Gana puntos y compite en un ranking compartido.</p>
+        <div class="chips"><span>🏆 Ranking común</span><span>🧩 Retos</span><span>💡 Propuestas</span></div>
+      </div>
+      <form id="login-form" class="panel login-card">
+        <h2>Entrar al juego</h2>
+        <p class="muted">Solo pueden entrar las personas invitadas.</p>
+        <label for="email">Correo electrónico</label>
+        <input id="email" name="email" type="email" autocomplete="username" required placeholder="tu@correo.com">
+        <label for="password">Contraseña</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Tu contraseña">
+        <button class="button button-primary full" type="submit">Iniciar sesión</button>
+        <p id="login-message" class="message" role="status"></p>
+        <small class="muted">¿No tienes cuenta? Pídele al propietario que te invite. El registro público está desactivado.</small>
+      </form>
+    </section>
+
+    <section id="recovery-view" class="auth-layout hidden">
+      <div class="hero">
+        <p class="eyebrow">RECUPERACIÓN DE CUENTA</p>
+        <h1>Volvamos al juego.</h1>
+        <p>Establece una contraseña nueva para tu cuenta de Juega con Jorgito.</p>
+      </div>
+      <form id="recovery-form" class="panel login-card">
+        <h2>Restablecer contraseña</h2>
+        <p class="muted">Usa una contraseña nueva y segura.</p>
+        <label for="new-password">Nueva contraseña</label>
+        <input id="new-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Mínimo 8 caracteres">
+        <label for="confirm-password">Confirmar contraseña</label>
+        <input id="confirm-password" type="password" autocomplete="new-password" minlength="8" required placeholder="Repite la contraseña">
+        <button class="button button-primary full" type="submit">Guardar nueva contraseña</button>
+        <p id="recovery-message" class="message" role="status"></p>
+        <button id="back-to-login" class="button button-secondary full" type="button">Volver al inicio de sesión</button>
+      </form>
+    </section>
+
+    <section id="app-view" class="hidden">
+      <section class="welcome">
+        <div>
+          <p class="eyebrow">BIENVENIDO AL DESORDEN</p>
+          <h1>Que empiece el juego.</h1>
+          <p class="muted">Tus puntos y el ranking se guardan en la nube.</p>
+        </div>
+        <div class="score-card"><span>Tu puntuación</span><strong id="my-score">0</strong><small>puntos acumulados</small></div>
+      </section>
+
+      <nav class="tabs" aria-label="Secciones">
+        <button class="tab active" data-view="ranking-panel" type="button">🏆 Ranking</button>
+        <button class="tab" data-view="party-panel" type="button">🎉 Minijuegos</button>
+        <button class="tab" data-view="characters-panel" type="button">🦸 Personajes</button>
+        <button class="tab" data-view="gallery-panel" type="button">😂 Galería</button>
+        <button class="tab" data-view="proposal-panel" type="button">💡 Proponer contenido</button>
+        <button id="admin-tab" class="tab hidden" data-view="admin-panel" type="button">🛠️ Administración</button>
+      </nav>
+
+      <section id="ranking-panel" class="view-panel">
+        <div class="section-heading"><div><h2>Ranking del grupo</h2><p class="muted">La clasificación es compartida por todos.</p></div><button id="refresh-ranking" class="button button-secondary" type="button">Actualizar</button></div>
+        <div id="ranking-list" class="ranking-list"><p class="muted">Cargando ranking…</p></div>
+      </section>
+
+      <section id="party-panel" class="view-panel hidden">
+        <div class="section-heading"><div><h2>La zona del caos</h2><p class="muted">Minijuegos del grupo. Cada respuesta correcta en «¿Quién es el personaje?» suma 1 punto al ranking compartido.</p></div></div>
+        <div class="games-grid">
+          <article class="panel party-game"><span class="game-icon">🗣️</span><h3>¿Quién es el personaje?</h3><p id="quote-question">Cargando pistas de las fichas reales…</p><div id="quote-options" class="choice-list"></div><p id="quote-feedback" class="message" role="status"></p><p id="quote-score-note" class="muted small">Cada acierto suma 1 punto al ranking.</p><button id="quote-next" class="button button-secondary" type="button">Otra pregunta</button></article>
+          <article class="panel party-game"><span class="game-icon">🎭</span><h3>¿Qué haría este personaje?</h3><p class="muted">Una situación absurda creada con las fichas del grupo.</p><label for="what-would-character">Elige un personaje</label><select id="what-would-character"><option value="">Cargando personajes…</option></select><p id="what-would-result" class="result-box" aria-live="polite">Elige a alguien y genera una situación.</p><button id="what-would-generate" class="button button-secondary" type="button">Generar situación</button></article>
+        </div>
+      </section>
+
+      <section id="characters-panel" class="view-panel hidden">
+        <div class="section-heading"><div><h2>Las leyendas del grupo</h2><p class="muted">Tarjetas de los personajes reales del grupo. Las fichas se cargan desde Supabase.</p></div></div>
+        <div class="character-notice owner-only hidden">💡 Los minijuegos usan estas fichas para generar preguntas automáticamente.</div>
+        <div id="characters-grid" class="characters-grid"></div>
+        <details class="panel character-template owner-only hidden">
+          <summary>📋 Formato para agregar más personajes</summary>
+          <p>Usa esta ficha como guía al crear un personaje nuevo en Administración → Publicar contenido → Personaje. Escribe los campos en el cuadro de contenido.</p>
+          <pre>Nombre real o nombre para mostrar:
+Apodo:
+Rol en el grupo:
+Descripción corta:
+Personalidad (3 rasgos):
+Frase típica:
+Anécdota memorable:
+Habilidad especial:
+Debilidad legendaria:
+Nivel de caos (1–5):
+Emoji o imagen (opcional):</pre>
+          <button id="copy-character-template" class="button button-secondary" type="button">Copiar ficha</button>
+          <p id="character-template-message" class="message" role="status"></p>
+        </details>
+      </section>
+
+      <section id="gallery-panel" class="view-panel hidden">
+        <div class="section-heading"><div><h2>Galería de memes y stickers</h2><p class="muted">Memes, imágenes y stickers del grupo. ¿Tienes una buena? Envíala como propuesta para revisión.</p></div><button id="refresh-gallery" class="button button-secondary" type="button">Actualizar galería</button></div>
+        <div class="gallery-filters" role="group" aria-label="Filtrar galería"><label for="gallery-filter">Mostrar:</label><select id="gallery-filter"><option value="all">Todos los personajes</option><option value="Moncayo">Moncayo</option><option value="Oscarito">Oscarito</option><option value="Daniel">Daniel</option></select></div>
+        <div class="gallery-note owner-only hidden">🖼️ Para publicar imágenes manualmente, usa enlaces directos a archivos públicos (JPG, PNG, GIF o WebP), no enlaces a páginas de publicación.</div>
+        <div id="gallery-grid" class="gallery-grid"><p class="muted">Cargando galería…</p></div>
+      </section>
+
+      <section id="proposal-panel" class="view-panel hidden">
+        <div class="section-heading"><div><h2>Envía una propuesta</h2><p class="muted">Los miembros sugieren; el propietario decide qué se publica.</p></div></div>
+        <form id="proposal-form" class="panel form-card">
+          <label for="proposal-type">Tipo de propuesta</label>
+          <select id="proposal-type" required>
+            <option value="personaje">Personaje</option><option value="anecdota">Anécdota</option><option value="frase">Frase típica</option><option value="imagen">Imagen graciosa / meme</option><option value="sticker">Sticker</option><option value="pregunta">Pregunta de trivia</option><option value="reto">Reto</option>
+          </select>
+          <label for="proposal-character">Personaje asociado (obligatorio)</label>
+          <select id="proposal-character" required><option value="">Selecciona un personaje</option><option>Moncayo</option><option>Oscarito</option><option>Daniel</option></select>
+          <label for="proposal-title">Título</label>
+          <input id="proposal-title" maxlength="100" required placeholder="Ej. La llegada triunfal de Jorgito">
+          <label for="proposal-body">Descripción / contenido</label>
+          <textarea id="proposal-body" rows="5" maxlength="3000" required placeholder="Describe la idea. No incluyas información privada sin permiso."></textarea>
+          <button class="button button-primary" type="submit">Enviar propuesta</button>
+          <p id="proposal-message" class="message" role="status"></p>
+        </form>
+        <div class="section-heading compact-heading"><div><h2>Mis propuestas</h2></div></div>
+        <div id="my-proposals" class="proposal-list"><p class="muted">Cargando…</p></div>
+      </section>
+
+      <section id="admin-panel" class="view-panel hidden">
+        <div class="section-heading"><div><h2>Administración de contenido</h2><p class="muted">Solo el propietario puede publicar contenido.</p></div></div>
+        <form id="character-edit-form" class="panel form-card">
+          <h3>Editar ficha de personaje</h3>
+          <p class="muted">Selecciona un personaje para cargar su información actual. Los cambios se guardan en Supabase y se reflejan en la sección Personajes.</p>
+          <label for="character-edit-select">Personaje</label>
+          <select id="character-edit-select" required><option value="">Selecciona un personaje</option><option>Moncayo</option><option>Oscarito</option><option>Daniel</option></select>
+          <label for="character-edit-nickname">Apodo</label><input id="character-edit-nickname" maxlength="100" required>
+          <label for="character-edit-emoji">Emoji</label><input id="character-edit-emoji" maxlength="12" placeholder="🎮">
+          <label for="character-edit-role">Rol en el grupo</label><input id="character-edit-role" maxlength="180" required>
+          <label for="character-edit-description">Descripción</label><textarea id="character-edit-description" rows="3" maxlength="1200" required></textarea>
+          <label for="character-edit-traits">Personalidad (separa los rasgos con comas)</label><input id="character-edit-traits" maxlength="200" placeholder="Loco, Hablador, Chistoso">
+          <label for="character-edit-quote">Frase típica</label><input id="character-edit-quote" maxlength="300">
+          <label for="character-edit-anecdote">Anécdota</label><textarea id="character-edit-anecdote" rows="3" maxlength="1200"></textarea>
+          <label for="character-edit-skill">Habilidad especial</label><input id="character-edit-skill" maxlength="300">
+          <label for="character-edit-weakness">Debilidad</label><input id="character-edit-weakness" maxlength="300">
+          <label for="character-edit-relationship">Amigos y enemigos</label><textarea id="character-edit-relationship" rows="2" maxlength="800" placeholder="Relaciones y rivalidades del personaje"></textarea>
+          <label for="character-edit-chaos">Nivel de caos (1–5)</label><select id="character-edit-chaos"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select>
+          <label for="character-edit-audio">Ruta o URL del audio MP3 (opcional)</label><input id="character-edit-audio" maxlength="500" placeholder="assets/audio/Moncayo.mp3">
+          <label for="character-edit-image">Foto / imagen del personaje</label><input id="character-edit-image" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+          <small class="muted">Si eliges una imagen nueva, se subirá a jorgito-gallery. Si no eliges archivo, se conservará la imagen actual.</small>
+          <img id="character-edit-image-preview" class="admin-image-preview hidden" alt="Vista previa de la foto del personaje">
+          <button class="button button-primary" type="submit">Guardar ficha del personaje</button>
+          <p id="character-edit-message" class="message" role="status"></p>
+        </form>
+        <form id="content-form" class="panel form-card">
+          <h3>Publicar contenido</h3>
+          <label for="content-type">Tipo</label>
+          <select id="content-type" required><option value="personaje">Personaje</option><option value="anecdota">Anécdota</option><option value="frase">Frase típica</option><option value="imagen">Imagen graciosa / meme</option><option value="sticker">Sticker</option><option value="pregunta">Pregunta de trivia</option><option value="reto">Reto</option></select>
+          <label for="content-character">Personaje asociado (obligatorio)</label>
+          <select id="content-character" required><option value="">Selecciona un personaje</option><option>Moncayo</option><option>Oscarito</option><option>Daniel</option></select>
+          <label for="content-title">Título</label>
+          <input id="content-title" maxlength="100" required>
+          <label for="content-image-file">Subir imagen desde el computador o celular (solo memes y stickers)</label>
+          <input id="content-image-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+          <small class="muted">Formatos: JPG, PNG, WEBP o GIF. Máximo 5 MB. Para GIF, la animación se conserva.</small>
+          <label for="content-body">Contenido o enlace de imagen</label>
+          <textarea id="content-body" rows="8" maxlength="3000" placeholder="Personaje: pega la ficha. Para meme/sticker puedes subir una imagen arriba o pegar aquí su URL pública."></textarea>
+          <small class="muted">En personajes, el contenido es la ficha. En memes y stickers puedes subir un archivo o usar un enlace. No es necesario hacer ambas cosas.</small>
+          <button class="button button-primary" type="submit">Publicar</button>
+          <p id="content-message" class="message" role="status"></p>
+        </form>
+        <h3 class="subheading">Propuestas pendientes</h3>
+        <div id="admin-proposals" class="proposal-list"><p class="muted">Cargando…</p></div>
+        <h3 class="subheading">Contenido publicado</h3>
+        <div id="published-content" class="proposal-list"><p class="muted">Cargando…</p></div>
+      </section>
+      <p id="global-message" class="message" role="status"></p>
+    </section>
+  </main>
+  <footer><span>Juega con Jorgito</span><span>Hecho para el grupo por Alejandro, no para el drama 😅</span></footer>
+</body>
+</html>

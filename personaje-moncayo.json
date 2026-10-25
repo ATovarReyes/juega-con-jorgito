@@ -1,0 +1,16 @@
+{
+  "name": "Moncayo",
+  "nickname": "Carro Loco",
+  "emoji": "🤡",
+  "role": "El gracioso del grupo",
+  "description": "El rey de la recocha, las historias inventadas y el camuflaje laboral. Siempre está tramando algo y puede convertir cualquier jornada en una misión para aparentar que trabaja.",
+  "traits": ["Loco", "Hablador", "Chistoso"],
+  "quote": "Qué hpta pereza trabajar",
+  "audio": "assets/audio/carro-loco.mp3",
+  "anecdote": "Pendiente de agregar una anécdota que él y el grupo quieran compartir.",
+  "skill": "Camuflaje laboral: parecer ocupado mientras trama algo",
+  "weakness": "Trabajar de verdad",
+  "chaos": 5,
+  "additional_info": "Le gusta ir al trabajo y aparentar que está trabajando; siempre anda tramando algo.",
+  "archetypes": ["Rey de la Pereza", "El Fantasma"]
+}
